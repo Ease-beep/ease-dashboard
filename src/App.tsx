@@ -8,6 +8,7 @@ import React from 'react'
 import { http } from 'viem'
 import RouteEstimator from './components/RouteEstimator'
 import BurnNotifier from './components/BurnNotifier'
+import BuildInfo from './components/BuildInfo'
 
 const queryClient = new QueryClient()
 
@@ -36,6 +37,7 @@ export default function App() {
             </div>
             <RouteEstimator />
             <BurnNotifier />
+            <BuildInfo />
           </div>
         </RainbowKitProvider>
       </QueryClientProvider>
