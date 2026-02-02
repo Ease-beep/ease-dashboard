@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { createPublicClient, http, formatEther } from 'viem'
+import { base } from 'wagmi/chains'
 
-// Demo addresses (public). Replace with real treasury later.
+const client = createPublicClient({ chain: base, transport: http('https://mainnet.base.org') })
+
 const TREASURY_ADDRESSES = [
   '0x318d906edcED8C1661341C9f1D612Ca57A57DC55',
   '0xC43B320A9Da13a0d5521fE5CF37E847c0584405B',
@@ -13,16 +16,13 @@ export default function TreasuryBalances() {
   useEffect(() => {
     const run = async () => {
       try {
-        const results: {address:string, eth:string}[] = []
+        const out: {address:string, eth:string}[] = []
         for (const a of TREASURY_ADDRESSES) {
-          const res = await fetch(`https://api.basescan.org/api?module=account&action=balance&address=${a}`)
-          const data = await res.json()
-          const wei = BigInt(data?.result || '0')
-          const eth = Number(wei) / 1e18
-          results.push({ address: a, eth: eth.toFixed(6) })
+          const bal = await client.getBalance({ address: a as `0x${string}` })
+          out.push({ address: a, eth: Number(formatEther(bal)).toFixed(6) })
         }
-        setBalances(results)
-      } catch (e) {
+        setBalances(out)
+      } catch {
         setError('Unable to fetch balances right now.')
       }
     }
@@ -44,7 +44,7 @@ export default function TreasuryBalances() {
           ))}
         </ul>
       )}
-      <p style={{ opacity:0.7, fontSize:12 }}>Data via BaseScan public API (demo). I’ll swap to our on-chain tools when ready.</p>
+      <p style={{ opacity:0.7, fontSize:12 }}>Data via Base public RPC. I’ll swap to internal tools later.</p>
     </section>
   )
 }

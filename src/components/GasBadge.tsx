@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from 'react'
+import { createPublicClient, http, formatGwei } from 'viem'
+import { baseSepolia } from 'wagmi/chains'
+
+const client = createPublicClient({ chain: baseSepolia, transport: http('https://sepolia.base.org') })
 
 export default function GasBadge() {
   const [gas, setGas] = useState<string>('—')
   const [status, setStatus] = useState<'idle'|'ok'|'err'>('idle')
 
   useEffect(() => {
-    const fetchGas = async () => {
+    const run = async () => {
       try {
-        // Simple public endpoint example for demo purposes
-        const res = await fetch('https://gas.api.base.org/base-sepolia')
-        if (!res.ok) throw new Error('Gas API error')
-        const data = await res.json()
-        const gwei = Number(data?.recommended?.priorityFee) || Number(data?.legacy?.suggestedMaxPriorityFeePerGas)
-        setGas(gwei ? gwei.toFixed(3) + ' gwei' : 'n/a')
+        const price = await client.getGasPrice()
+        setGas(formatGwei(price) + ' gwei')
         setStatus('ok')
-      } catch (e) {
-        setGas('n/a')
+      } catch {
         setStatus('err')
+        setGas('n/a')
       }
     }
-    fetchGas()
-    const t = setInterval(fetchGas, 30000)
+    run()
+    const t = setInterval(run, 30000)
     return () => clearInterval(t)
   }, [])
 
