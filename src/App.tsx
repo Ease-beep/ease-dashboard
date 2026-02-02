@@ -1,11 +1,13 @@
 import '@rainbow-me/rainbowkit/styles.css'
 import { RainbowKitProvider, ConnectButton } from '@rainbow-me/rainbowkit'
-import { getDefaultConfig, RainbowKitAuthenticationProvider } from '@rainbow-me/rainbowkit'
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { baseSepolia } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 import { http } from 'viem'
+import RouteEstimator from './components/RouteEstimator'
+import BurnNotifier from './components/BurnNotifier'
 
 const queryClient = new QueryClient()
 
@@ -17,12 +19,6 @@ const config = getDefaultConfig({
   transports: {
     [baseSepolia.id]: http()
   },
-  wallets: [
-    {
-      groupName: 'Recommended',
-      wallets: [] // RainbowKit will show injected wallets automatically
-    }
-  ]
 })
 
 export default function App() {
@@ -36,8 +32,10 @@ export default function App() {
               <ConnectButton />
             </header>
             <div className="card">
-              <p>Deployed successfully. Wallet connect supports injected wallets (MetaMask/Coinbase browser). We can enable QR (WalletConnect) later by adding an ID.</p>
+              <p>Live and building. Injected wallets (MetaMask/Coinbase browser) supported now. QR can be added later with a WalletConnect ID.</p>
             </div>
+            <RouteEstimator />
+            <BurnNotifier />
           </div>
         </RainbowKitProvider>
       </QueryClientProvider>
